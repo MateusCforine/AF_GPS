@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/txtTitulo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Guia de Lugares Próximos"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginBottom="12dp" />
+
+        <TextView
+            android:id="@+id/txtLocalizacao"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Capturando localização..."
+            android:textSize="15sp"
+            android:padding="10dp"
+            android:background="#EEEEEE"
+            android:layout_marginBottom="12dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Categoria para buscar:"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/spCategoriaBusca"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp" />
+
+        <Button
+            android:id="@+id/btnBuscar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Buscar lugares próximos"
+            android:layout_marginBottom="12dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Locais encontrados pela API:"
+            android:textStyle="bold"
+            android:layout_marginBottom="5dp" />
+
+        <ListView
+            android:id="@+id/listLocaisApi"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:dividerHeight="1dp"
+            android:layout_marginBottom="12dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Observação pessoal:"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/edtObservacao"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ex: lugar bom para visitar, estudar ou comer"
+            android:inputType="textMultiLine"
+            android:minLines="2"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Finalidade do local:"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/spCategoriaFinalidade"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp" />
+
+        <Button
+            android:id="@+id/btnSalvar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Salvar local"
+            android:layout_marginBottom="8dp" />
+
+        <Button
+            android:id="@+id/btnAtualizar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Atualizar local salvo"
+            android:layout_marginBottom="8dp" />
+
+        <Button
+            android:id="@+id/btnLimpar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Limpar seleção"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Locais salvos no Firebase:"
+            android:textStyle="bold"
+            android:layout_marginBottom="5dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Clique curto para editar | Clique longo para excluir"
+            android:textSize="13sp"
+            android:layout_marginBottom="5dp" />
+
+        <ListView
+            android:id="@+id/listLocaisSalvos"
+            android:layout_width="match_parent"
+            android:layout_height="260dp"
+            android:dividerHeight="1dp" />
+
+    </LinearLayout>
+
+</ScrollView>
