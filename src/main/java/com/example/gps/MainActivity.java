@@ -84,7 +84,11 @@ public class MainActivity extends AppCompatActivity {
 
             edtObservacao.setText("");
 
-            Toast.makeText(this, "Local selecionado para salvar: " + localSelecionadoApi.getNome(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(
+                    this,
+                    "Local selecionado para salvar: " + localSelecionadoApi.getNome(),
+                    Toast.LENGTH_LONG
+            ).show();
         });
 
         listLocaisSalvos.setOnItemClickListener((parent, view, position, id) -> {
@@ -95,7 +99,11 @@ public class MainActivity extends AppCompatActivity {
 
             selecionarItemSpinner(spCategoriaFinalidade, localSelecionadoSalvo.getCategoria());
 
-            Toast.makeText(this, "Local carregado para edição", Toast.LENGTH_SHORT).show();
+            Toast.makeText(
+                    this,
+                    "Local carregado para edição",
+                    Toast.LENGTH_SHORT
+            ).show();
         });
 
         listLocaisSalvos.setOnItemLongClickListener((parent, view, position, id) -> {
@@ -168,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void solicitarPermissaoLocalizacao() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED ||
+                != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                         != PackageManager.PERMISSION_GRANTED) {
 
@@ -205,10 +213,15 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
-            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            LocationManager locationManager =
+                    (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
             if (locationManager == null) {
-                Toast.makeText(this, "Serviço de localização indisponível", Toast.LENGTH_LONG).show();
+                Toast.makeText(
+                        this,
+                        "Serviço de localização indisponível",
+                        Toast.LENGTH_LONG
+                ).show();
                 return;
             }
 
@@ -225,12 +238,23 @@ public class MainActivity extends AppCompatActivity {
                 mostrarEnderecoOuCoordenadas();
 
             } else {
-                txtLocalizacao.setText("Não foi possível obter a localização. Ative o GPS e tente novamente.");
-                Toast.makeText(this, "Localização não encontrada", Toast.LENGTH_LONG).show();
+                txtLocalizacao.setText(
+                        "Não foi possível obter a localização. Ative o GPS e tente novamente."
+                );
+
+                Toast.makeText(
+                        this,
+                        "Localização não encontrada. No emulador, configure uma localização manual.",
+                        Toast.LENGTH_LONG
+                ).show();
             }
 
         } catch (Exception e) {
-            Toast.makeText(this, "Erro ao capturar localização: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(
+                    this,
+                    "Erro ao capturar localização: " + e.getMessage(),
+                    Toast.LENGTH_LONG
+            ).show();
         }
     }
 
@@ -238,11 +262,11 @@ public class MainActivity extends AppCompatActivity {
         try {
             Geocoder geocoder = new Geocoder(this, Locale.getDefault());
 
-            List<Address> enderecos = geocoder.getFromLocation(latitudeAtual, longitudeAtual, 1);
+            List<Address> enderecos =
+                    geocoder.getFromLocation(latitudeAtual, longitudeAtual, 1);
 
             if (enderecos != null && !enderecos.isEmpty()) {
                 Address endereco = enderecos.get(0);
-
                 String textoEndereco = endereco.getAddressLine(0);
 
                 txtLocalizacao.setText(
@@ -271,39 +295,71 @@ public class MainActivity extends AppCompatActivity {
 
     private void buscarLocaisNaApi() {
         if (latitudeAtual == 0 && longitudeAtual == 0) {
-            Toast.makeText(this, "Localização ainda não capturada", Toast.LENGTH_SHORT).show();
+            Toast.makeText(
+                    this,
+                    "Localização ainda não capturada. Tentando capturar novamente...",
+                    Toast.LENGTH_LONG
+            ).show();
+
             capturarLocalizacaoAtual();
             return;
         }
 
         String categoria = spCategoriaBusca.getSelectedItem().toString();
 
-        Toast.makeText(this, "Buscando locais próximos...", Toast.LENGTH_SHORT).show();
+        Toast.makeText(
+                this,
+                "Buscando locais próximos...",
+                Toast.LENGTH_SHORT
+        ).show();
 
-        LocalApi.buscarLocaisProximos(latitudeAtual, longitudeAtual, categoria, new LocalApi.LocalApiCallback() {
-            @Override
-            public void onSucesso(ArrayList<LocalSalvo> locais) {
-                listaLocaisApi.clear();
-                listaLocaisApi.addAll(locais);
-                adapterApi.notifyDataSetChanged();
+        LocalApi.buscarLocaisProximos(
+                latitudeAtual,
+                longitudeAtual,
+                categoria,
+                new LocalApi.LocalApiCallback() {
+                    @Override
+                    public void onSucesso(ArrayList<LocalSalvo> locais) {
+                        listaLocaisApi.clear();
+                        listaLocaisApi.addAll(locais);
+                        adapterApi.notifyDataSetChanged();
 
-                if (locais.isEmpty()) {
-                    Toast.makeText(MainActivity.this, "Nenhum local encontrado", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(MainActivity.this, "Locais encontrados: " + locais.size(), Toast.LENGTH_SHORT).show();
+                        localSelecionadoApi = null;
+
+                        if (locais.isEmpty()) {
+                            Toast.makeText(
+                                    MainActivity.this,
+                                    "Nenhum local encontrado para essa categoria",
+                                    Toast.LENGTH_LONG
+                            ).show();
+                        } else {
+                            Toast.makeText(
+                                    MainActivity.this,
+                                    "Locais encontrados: " + locais.size() + ". Clique em um local para selecionar.",
+                                    Toast.LENGTH_LONG
+                            ).show();
+                        }
+                    }
+
+                    @Override
+                    public void onErro(String erro) {
+                        Toast.makeText(
+                                MainActivity.this,
+                                "Erro na API: " + erro,
+                                Toast.LENGTH_LONG
+                        ).show();
+                    }
                 }
-            }
-
-            @Override
-            public void onErro(String erro) {
-                Toast.makeText(MainActivity.this, "Erro na API: " + erro, Toast.LENGTH_LONG).show();
-            }
-        });
+        );
     }
 
     private void salvarLocal() {
         if (localSelecionadoApi == null) {
-            Toast.makeText(this, "Selecione um local da lista da API primeiro", Toast.LENGTH_SHORT).show();
+            Toast.makeText(
+                    this,
+                    "Primeiro clique em um local encontrado pela API antes de salvar",
+                    Toast.LENGTH_LONG
+            ).show();
             return;
         }
 
@@ -312,6 +368,11 @@ public class MainActivity extends AppCompatActivity {
 
         if (observacao.isEmpty()) {
             edtObservacao.setError("Digite uma observação");
+            Toast.makeText(
+                    this,
+                    "Digite uma observação antes de salvar",
+                    Toast.LENGTH_LONG
+            ).show();
             return;
         }
 
@@ -331,12 +392,21 @@ public class MainActivity extends AppCompatActivity {
                 .document(id)
                 .set(local)
                 .addOnSuccessListener(unused -> {
-                    Toast.makeText(this, "Local salvo com sucesso", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(
+                            this,
+                            "Local salvo com sucesso!",
+                            Toast.LENGTH_LONG
+                    ).show();
+
                     limparCampos();
                     carregarLocaisSalvos();
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Erro ao salvar: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(
+                            this,
+                            "Erro ao salvar no Firebase: " + e.getMessage(),
+                            Toast.LENGTH_LONG
+                    ).show();
                 });
     }
 
@@ -348,19 +418,32 @@ public class MainActivity extends AppCompatActivity {
 
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         LocalSalvo local = document.toObject(LocalSalvo.class);
+
+                        if (local.getId() == null || local.getId().isEmpty()) {
+                            local.setId(document.getId());
+                        }
+
                         listaLocaisSalvos.add(local);
                     }
 
                     adapterSalvos.notifyDataSetChanged();
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Erro ao carregar locais: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(
+                            this,
+                            "Erro ao carregar locais salvos: " + e.getMessage(),
+                            Toast.LENGTH_LONG
+                    ).show();
                 });
     }
 
     private void atualizarLocalSalvo() {
         if (localSelecionadoSalvo == null) {
-            Toast.makeText(this, "Selecione um local salvo para editar", Toast.LENGTH_SHORT).show();
+            Toast.makeText(
+                    this,
+                    "Selecione um local salvo para editar",
+                    Toast.LENGTH_LONG
+            ).show();
             return;
         }
 
@@ -369,6 +452,11 @@ public class MainActivity extends AppCompatActivity {
 
         if (observacao.isEmpty()) {
             edtObservacao.setError("Digite uma observação");
+            Toast.makeText(
+                    this,
+                    "Digite uma observação antes de atualizar",
+                    Toast.LENGTH_LONG
+            ).show();
             return;
         }
 
@@ -379,12 +467,21 @@ public class MainActivity extends AppCompatActivity {
                 .document(localSelecionadoSalvo.getId())
                 .set(localSelecionadoSalvo)
                 .addOnSuccessListener(unused -> {
-                    Toast.makeText(this, "Local atualizado com sucesso", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(
+                            this,
+                            "Local atualizado com sucesso!",
+                            Toast.LENGTH_LONG
+                    ).show();
+
                     limparCampos();
                     carregarLocaisSalvos();
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Erro ao atualizar: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(
+                            this,
+                            "Erro ao atualizar no Firebase: " + e.getMessage(),
+                            Toast.LENGTH_LONG
+                    ).show();
                 });
     }
 
@@ -402,12 +499,21 @@ public class MainActivity extends AppCompatActivity {
                 .document(local.getId())
                 .delete()
                 .addOnSuccessListener(unused -> {
-                    Toast.makeText(this, "Local excluído com sucesso", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(
+                            this,
+                            "Local excluído com sucesso!",
+                            Toast.LENGTH_LONG
+                    ).show();
+
                     carregarLocaisSalvos();
                     limparCampos();
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Erro ao excluir: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(
+                            this,
+                            "Erro ao excluir no Firebase: " + e.getMessage(),
+                            Toast.LENGTH_LONG
+                    ).show();
                 });
     }
 
@@ -419,6 +525,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void selecionarItemSpinner(Spinner spinner, String valor) {
+        if (valor == null) {
+            return;
+        }
+
         ArrayAdapter adapter = (ArrayAdapter) spinner.getAdapter();
 
         for (int i = 0; i < adapter.getCount(); i++) {
@@ -437,11 +547,19 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (requestCode == CODIGO_PERMISSAO_LOCALIZACAO) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (grantResults.length > 0 &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
                 capturarLocalizacaoAtual();
+
             } else {
                 txtLocalizacao.setText("Permissão de localização negada.");
-                Toast.makeText(this, "Sem permissão não é possível usar o GPS", Toast.LENGTH_LONG).show();
+
+                Toast.makeText(
+                        this,
+                        "Sem permissão não é possível usar o GPS",
+                        Toast.LENGTH_LONG
+                ).show();
             }
         }
     }
